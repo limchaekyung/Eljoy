@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.find.mybatis.IdMapper">
+	<resultMap type="com.care.root.find.dto.IdDTO" id="check">
+		<id property="id" column="member_id"/>
+		<result property="name" column="member_name"/>
+	</resultMap>
+	
+	<select id="id_name" resultMap="check">
+		select * from z_member where member_name=#{name}
+	</select>
+	
+	<select id="id_found" resultMap="check">
+		select * from z_member where member_name=#{name}
+	</select>
+</mapper>

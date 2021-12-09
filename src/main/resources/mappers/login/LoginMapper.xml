@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.login.mybatis.LoginMapper">
+	<resultMap type="com.care.root.login.dto.LoginDTO" id="check">
+		<id property="id" column="member_id"/>
+		<result property="pw" column="member_pw"/>
+		<result property="name" column="member_name"/>
+	</resultMap>
+	
+	<!-- 로그인-->
+	<select id="login" resultMap="check">
+		select member_pw from z_member where member_id=#{id} 
+	</select>
+	
+	
+</mapper>

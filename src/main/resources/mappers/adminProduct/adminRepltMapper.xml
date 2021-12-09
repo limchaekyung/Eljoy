@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.adminProduct.mtbatis.productMapper">
+			
+	<resultMap type="com.care.root.admin.product.dto.boardQnaRepDTO" id="reply">
+		<result property="eReplyContent" column="e_reply_content"/>
+		<result property="eReplyWritedate" column="e_reply_writedate"/>
+		<result property="enquiryReplyNo" column="enquiry_reply_no"/>
+		<result property="eReplyCheck" column="e_reply_check"/>
+	</resultMap>
+	<resultMap type="com.care.root.board.dto.EnquiryDTO" id="qna">
+		<id property="enquiry_no" column="enquiry_no"/>
+		<result property="member_id" column="member_id"/>
+		<result property="enquiry_subject" column="enquiry_subject"/>
+		<result property="enquiry_content" column="enquiry_content"/>
+		<result property="enquiry_hit" column="enquiry_hit"/>
+		<result property="enquiry_writedate" column="enquiry_writedate"/> 
+		<result property="enquiry_state" column="enquiry_state"/>
+	</resultMap>
+	
+	<insert id="addReply">
+		insert into enquiry_reply(e_reply_content,enquiry_reply_no,e_reply_check)
+		 values(#{eReplyContent},#{enquiryReplyNo},#{eReplyCheck})
+	</insert>
+	<select id="getRepList" resultMap="reply">
+		select * from enquiry_reply where enquiry_reply_no =#{enquiryReplyNo}
+	</select>
+	<update id="replyModify">
+		UPDATE enquiry_reply SET
+		e_reply_content = #{eReplyContent}
+	   	where enquiry_reply_no=#{enquiryReplyNo}
+	</update>
+	<update id="replyState">
+		UPDATE board_enquiry SET
+		enquiry_state = #{enquiry_state}
+	   	where enquiry_no=#{enquiry_no}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

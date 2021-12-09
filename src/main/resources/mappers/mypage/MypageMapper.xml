@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.mypage.mybatis.MypageMapper">
+	<resultMap type="com.care.root.mypage.dto.CartDTO" id="cart">
+		<id property="cart_no" column="cart_no"/>
+		<result property="product_num" column="product_num"/>
+		<result property="product_name" column="product_name"/>
+		<result property="payment_total" column="payment_total"/>
+		<result property="cart_state" column="cart_state"/>
+		<result property="cart_photo" column="cart_photo"/>
+		<result property="member_id" column="member_id"/>
+	</resultMap>
+	<resultMap type="com.care.root.mypage.dto.ReviewDTO" id="review">
+		<id property="review_no" column="review_no"/>
+		<result property="review_content" column="review_content"/>
+		<result property="review_score" column="review_score"/>
+		<result property="review_file1" column="review_file1"/>
+		<result property="review_file2" column="review_file2"/>
+		<result property="review_file3" column="review_file3"/>
+		<result property="review_id" column="review_id"/>
+		<result property="review_writedate" column="review_writedate"/>
+		<result property="product_name" column="product_name"/>
+	</resultMap>
+	<resultMap type="com.care.root.board.dto.EnquiryDTO" id="myQna">
+		<id property="enquiry_no" column="enquiry_no"/>
+		<result property="member_id" column="member_id"/>
+		<result property="enquiry_subject" column="enquiry_subject"/>
+		<result property="enquiry_content" column="enquiry_content"/>
+		<result property="enquiry_hit" column="enquiry_hit"/>
+		<result property="enquiry_writedate" column="enquiry_writedate"/> 
+		<result property="enquiry_state" column="enquiry_state"/>
+	</resultMap>
+	<resultMap type="com.care.root.payment.dto.paymentDTO" id="payment">
+  		<result property="payment_id" column="payment_id"/>  
+  		<result property="product_name" column="product_name"/>  
+  		<result property="product_num" column="product_num"/>
+  		<result property="payment_name" column="payment_name"/>
+  		<result property="payment_addr1" column="payment_addr1"/>
+  		<result property="payment_addr2" column="payment_addr2"/>
+  		<result property="payment_addr3" column="payment_addr3"/>
+  		<result property="payment_phone" column="payment_phone"/>
+  		<result property="payment_delivery" column="payment_delivery"/>
+  		<result property="payment_memo" column="payment_memo"/>
+  		<result property="payment_total" column="payment_total"/>
+  		<result property="payment_date" column="payment_date"/>
+  		<result property="cart_photo" column="cart_photo"/>
+  		<result property="member_id" column="member_id"/>
+  	</resultMap>
+	
+	<!-- 장바구니 -->
+	<select id="myCart" resultMap="cart">
+		select * from cart where member_id=#{member_id} order by cart_no desc 
+	</select>
+	<!-- 장바구니 내역 삭제 -->
+	<delete id="deleteCart">
+		delete from cart where cart_no=#{cart_no} and member_id=#{member_id}
+	</delete>
+	<!-- 장바구니 목록 수 -->
+	<select id="cartCnt" resultType="Integer">
+		select * from cart where member_id=#{member_id}
+	</select>
+	
+	<!-- 내 대여현황 -->
+	<select id="myRental" resultMap="payment">
+		select * from patment where member_id=#{member_id} order by payment_id desc
+	</select>
+	
+	<!-- 내 리뷰 저장 -->
+	<insert id="reviewSave">
+		insert into board_review(review_no,review_content,review_score,review_file1,review_file2,review_file3,review_id,product_name) 
+		values(review_seq.nextval,#{review_content},#{review_score},#{review_file1},#{review_file2},#{review_file3},#{review_id},#{product_name})
+	</insert>
+	<!-- 내 리뷰 전체 목록 -->
+	<select id="myReview" resultMap="review">
+		select * from board_review where review_id=#{review_id} order by review_no desc
+	</select>
+	<!-- 내 리뷰 클릭 시 상세보기 -->
+	<select id="selectReview" resultMap="review">
+		select * from board_review where review_no=#{review_no}
+	</select>
+	<!-- 내 리뷰 수정 -->
+	<update id="modifyReviewSave">
+		update board_review set review_content=#{review_content},  
+		review_file1=#{review_file1}, review_file2=#{review_file2}, review_file3=#{review_file3} where review_no=#{review_no}
+	</update>
+	<!-- 내 리뷰 삭제 -->
+	<delete id="deleteReview">
+		delete from board_review where review_no=#{review_no} 
+	</delete>
+	
+	<!-- 내 질문 전체 목록 -->
+	<select id="myEnquiry" resultMap="myQna">
+		select * from board_enquiry where member_id=#{member_id} order by enquiry_no desc
+	</select>
+	
+	
+</mapper>

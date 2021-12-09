@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.board.mybatis.BoardMapper">
+	<resultMap type="com.care.root.board.dto.NoticeDTO" id="notice">
+		<id property="notice_no" column="notice_no"/>
+		<result property="notice_group" column="notice_group"/>
+		<result property="notice_content" column="notice_content"/>
+		<result property="notice_writedate" column="notice_writedate"/>
+		<result property="notice_title" column="notice_title"/>
+		<result property="notice_hit" column="notice_hit"/>
+	</resultMap>
+	<resultMap type="com.care.root.board.dto.EnquiryDTO" id="qna">
+		<id property="enquiry_no" column="enquiry_no"/>
+		<result property="member_id" column="member_id"/>
+		<result property="enquiry_subject" column="enquiry_subject"/>
+		<result property="enquiry_content" column="enquiry_content"/>
+		<result property="enquiry_hit" column="enquiry_hit"/>
+		<result property="enquiry_writedate" column="enquiry_writedate"/> 
+		<result property="enquiry_state" column="enquiry_state"/>
+	</resultMap>
+	<resultMap type="com.care.root.board.dto.FaqDTO" id="faq">
+		<id property="faq_no" column="faq_no"/>
+		<result property="faq_group" column="faq_group"/>
+		<result property="faq_subject" column="faq_subject"/>
+		<result property="faq_content" column="faq_content"/>
+	</resultMap>
+	
+	<!-- 자주하는 질문 전체 목록 -->
+	<select id="faq" resultMap="faq">
+		select * from faq
+	</select>
+	<!-- 자주하는 질문 그룹별 목록 -->
+	<select id="faqList" resultMap="faq">
+		select * from faq where faq_group=#{faq_group}
+	</select>
+	
+	<!-- 공지사항 전체 목록 -->
+	<select id="notice" resultMap="notice">
+		select B.* from(select rownum rn, A.* from
+		(select * from board_notice order by notice_no desc)A)B where rn between #{s} and #{e}
+	</select>
+	<!-- 공지사항 전체 목록 수 카운트 -->
+	<select id="noticeCount" resultType="Integer">
+		select count(*) from board_notice	
+	</select>
+	<!-- 공지사항 클릭 시 상세보기 -->
+	<select id="selectNotice" resultMap="notice">
+		select * from board_notice where notice_no=#{notice_no}
+	</select>
+	<!-- 공지사항 클릭 시 조회수 증가 -->
+	<update id="upHitNotice">
+		update board_notice set notice_hit=notice_hit+1 where notice_no=#{notice_no}
+	</update>
+	<!-- 공지사항 검색 -->
+	<select id="searchNotice" parameterType="java.util.HashMap" resultMap="notice">
+		select * from board_notice <include refid="searchN" /> order by notice_no desc
+	</select>
+	<sql id="searchN">
+		<choose>
+           <when test="search_option eq 'all' ">
+                where  
+                      notice_title like '%'||#{keyword}||'%'
+                      or notice_content like '%'||#{keyword}||'%'   
+            </when>
+            <otherwise>
+                where ${search_option} like '%'||#{keyword}||'%'
+            </otherwise>
+        </choose>     
+	</sql>
+	
+	<!-- Q&A 전체 목록 -->
+	<select id="qna" resultMap="qna">
+		select B.* from(select rownum rn, A.* from
+		(select * from board_enquiry order by enquiry_no desc)A)B where rn between #{s} and #{e}
+	</select>
+	<!-- Q&A 전체 목록 수 카운트 -->
+	<select id="qnaCount" resultType="Integer">
+		select count(*) from board_enquiry	
+	</select>
+	<!-- Q&A 글 저장 -->
+	<insert id="qnaSave">
+		insert into board_enquiry(enquiry_no,member_id,enquiry_subject,enquiry_content,enquiry_state) 
+		values(enquiry_seq.nextval,#{member_id},#{enquiry_subject},#{enquiry_content},#{enquiry_state})
+	</insert>
+	<!-- 조회수 증가 -->
+	<update id="upHit">
+		update board_enquiry set hit=hit+1 where enquiry_no=#{enquiry_no}
+	</update>
+	<!-- Q&A 제목 클릭 시 상세보기 -->
+	<select id="selectQna" resultMap="qna">
+		select * from board_enquiry where enquiry_no=#{enquiry_no}
+	</select>
+	<!-- Q&A 검색 -->
+	<select id="searchQna" parameterType="java.util.HashMap" resultMap="qna">
+		select * from board_enquiry <include refid="searchQ" /> order by enquiry_no desc
+	</select>
+	<sql id="searchQ">
+		<choose>
+           <when test="search_option == 'all' ">
+                where  
+                      member_id like '%'||#{keyword}||'%'
+                      or enquiry_content like '%'||#{keyword}||'%'
+                      or enquiry_subject like '%'||#{keyword}||'%'   
+            </when>
+            <otherwise>
+                where ${search_option} like '%'||#{keyword}||'%'
+            </otherwise>
+        </choose>     
+	</sql>
+	<update id="modifySave">
+		update board_enquiry set enquiry_subject=#{enquiry_subject}, enquiry_content=#{enquiry_content} where enquiry_no=#{enquiry_no}
+	</update>
+	
+	<delete id="deleteQna">
+		delete from board_enquiry where enquiry_no=#{enquiry_no}
+	</delete>
+	
+</mapper>

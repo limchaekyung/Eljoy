@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.join.mybatis.JoinMapper">
+	<resultMap type="com.care.root.join.dto.JoinDTO" id="check">
+		<id property="user_id" column="member_id"/>
+		<result property="user_pw" column="member_pw"/>
+		<result property="user_name" column="member_name"/>
+		<result property="user_email" column="member_email"/>
+		<result property="user_phone" column="member_phone"/>
+		<result property="user_gender" column="member_gender"/>
+	</resultMap>
+	
+	<!-- 회원가입 -->
+	<insert id="join">
+		insert into z_member(member_id,member_pw,member_name,member_email,member_phone,
+		member_gender, member_num) values(#{user_id},#{user_pw},#{user_name},#{user_email},
+		#{user_phone},#{user_gender},all_user.nextval)
+	</insert>
+	<!-- id check -->
+	<select id="id_check" resultMap="check">
+		select member_id, member_pw, member_name, member_email, member_phone, member_gender
+		 from z_member where member_id=#{user_id}
+	</select>
+	<select id="email_check" resultMap="check">
+		select member_id, member_pw, member_name, member_email, member_phone, member_gender
+		 from z_member where member_email=#{user_email}
+	</select>
+	<select id="phone_check" resultMap="check">
+		select member_id, member_pw, member_name, member_email, member_phone, member_gender
+		from z_member where member_phone=#{user_phone}
+	</select>
+</mapper>

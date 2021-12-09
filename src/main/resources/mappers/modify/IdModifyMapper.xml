@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.modify.mybatis.IdModifyMapper">
+	<resultMap type="com.care.root.modify.dto.IdDTO" id="id">
+		<id property="user_id" column="member_id"/>
+		<result property="user_pw" column="member_pw"/>
+		<result property="user_name" column="member_name"/>
+		<result property="user_email" column="member_email"/>
+		<result property="user_phone" column="member_phone"/>
+	</resultMap>
+	
+	<!-- 수정 -->
+	<select id="modify" resultMap="id">
+		select member_id, member_pw, member_name, member_email, member_phone
+		 from z_member where member_id=#{user_id}
+	</select>
+	
+	<select id="Id_email" resultMap="id">
+		select member_id, member_pw, member_name, member_email, member_phone
+		 from z_member where member_email=#{user_email}
+	</select>
+		
+	<select id="Id_phone" resultMap="id">
+		select member_id, member_pw, member_name, member_email, member_phone
+		 from z_member where member_phone=#{user_phone}
+	</select>
+	<update id="id_modify">
+		update z_member set member_pw=#{user_pw}, member_name=#{user_name}, 
+		member_email=#{user_email}, member_phone=#{user_phone} where member_id=#{user_id}
+	</update>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.login.mybatis.SnsLogMapper">
+	<resultMap type="com.care.root.login.dto.SnsLogDTO" id="snsCheck">
+		<id property="id" column="sns_id"/>
+		<result property="email" column="sns_email"/>
+		<result property="name" column="sns_name"/>
+		<result property="phone" column="sns_phone"/>		
+		<result property="gender" column="sns_gender"/>
+		<result property="limitTime" column="limit_time"/>
+		<result property="sessionId" column="session_id"/>
+	</resultMap>
+	
+	<!-- 로그인-->
+	<select id="snsIdCheck" resultMap="snsCheck">
+		select * from sns_member where sns_id=#{id} 
+	</select>
+	
+	<insert id="sns_register">
+		insert into sns_member(sns_id, sns_name, sns_email, sns_phone, sns_gender,
+		 sns_num) values(#{id}, #{name}, #{email}, #{phone}, #{gender},
+		 all_user.nextval)
+	</insert>
+	
+</mapper>

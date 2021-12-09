@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.adminProduct.mtbatis.productMapper">
+	<resultMap type="com.care.root.admin.product.dto.productDTO" id="product">
+		<id property="productNum" column="product_num"/>
+		<result property="productName" column="product_name"/>
+		<result property="productTitle" column="product_title"/>
+		<result property="productCategory" column="product_category"/>
+		<result property="productContent" column="product_content"/>		
+		<result property="productDate" column="product_data"/>
+		<result property="productCompany" column="product_company"/>		
+		<result property="productQuantity" column="product_quantity"/>
+		<result property="productPee" column="product_pee"/>
+		<result property="productPeriod" column="product_period"/>
+	</resultMap>
+	
+	
+	<!-- <resultMap type="productImageDTO" id="productImageDTO_rm"> -->
+	<resultMap type="com.care.root.admin.product.dto.productImageDTO" id="productImg">
+			<id property="fileNo" column="file_no"/>
+			<result property="filePath" column="file_path"/>
+			<result property="fileName" column="file_name"/>
+			<result property="fileLevel" column="file_level"/>
+			<result property="parentBoardNo" column="parent_board_no"/>
+  </resultMap>		
+	<resultMap type="com.care.root.board.dto.NoticeDTO" id="notice">
+		<id property="notice_no" column="notice_no"/>
+		<result property="notice_group" column="notice_group"/>
+		<result property="notice_content" column="notice_content"/>
+		<result property="notice_writedate" column="notice_writedate"/>
+		<result property="notice_title" column="notice_title"/>
+		<result property="notice_hit" column="notice_hit"/>
+	</resultMap>		
+	
+	<resultMap type="com.care.root.board.dto.FaqDTO" id="faq">
+		<id property="faq_no" column="faq_no"/>
+		<result property="faq_group" column="faq_group"/>
+		<result property="faq_subject" column="faq_subject"/>
+		<result property="faq_content" column="faq_content"/>
+	</resultMap>
+	
+	
+	<select id="adminProductList" resultMap="product">
+		<!-- select * from product order by product_data desc -->
+		select B.* from(select rownum rn, A.* from
+		(select * from product order by product_data desc)A)B where rn between #{s} and #{e}
+		
+	</select>
+	<insert id="insertProduct" parameterType="map">
+		insert into product(product_num,product_name,product_title,product_content,product_quantity,product_pee,product_company,product_category,product_period)
+			values(#{productNum},#{productName},#{productTitle},#{productContent},#{productQuantity},#{productPee},#{productCompany},#{productCategory},#{productPeriod})
+	</insert>
+	
+	<select id="adminProductView" resultMap="product">
+		select * from product where product_num=#{productNum}
+	</select>
+	
+	
+	<select id="attachmentList" parameterType="string" resultMap="productImg">
+		SELECT * FROM PRODUCTIMAGE
+		WHERE parent_board_no = #{productNum}
+		AND FILE_LEVEL = 0
+	</select>
+	
+<!-- 	<update id="productModify">
+		update product set product_name=#{productName}, product_title=#{productTitle}, product_category=#{productCategory},product_content=#{productContent},product_company=#{productCompany},
+		product_quantity=#{productQuantity},product_pee=#{productPee} where product_num=#{productNum}
+	</update> -->
+	
+		<!-- 게시글 수정 -->
+	<update id="productModify">
+		UPDATE product SET
+		product_name = #{productName},
+		product_title = #{productTitle},
+		product_category = #{productCategory},
+		product_content=#{productContent},			
+		product_company=#{productCompany},
+	   	product_quantity=#{productQuantity},
+	   	product_pee=#{productPee},
+	   	product_period=#{productPeriod} 
+	   	where product_num=#{productNum}
+	</update>		
+
+	
+	
+	
+	
+	<!-- <delete id="delete">
+		delete product where product_num=#{productNum}
+	</delete> -->
+	
+		<!-- 파일 정보 삽입(List 이용)-->
+		<insert id="insertProductImg" parameterType="list">
+			INSERT INTO productImage
+			SELECT SEQ_FNO.NEXTVAL, A.* FROM (
+				<foreach collection="list" item="item"  separator=" UNION ALL ">
+					SELECT #{item.filePath} FILE_PATH,
+								 #{item.fileName} FILE_NAME,
+								 #{item.fileLevel} FILE_LEVEL,
+								 #{item.parentBoardNo} PARENT_BOARD_NO
+					FROM DUAL	
+				</foreach>
+			)A
+		
+		</insert>
+	<select id="selectProductCount" resultType="Integer">
+		select count(*) from product
+	</select>
+	
+	 <!-- Shop 파일 정보 수정 -->
+<update id="updateProductImg" parameterType="string">
+	UPDATE PRODUCTIMAGE SET
+	FILE_NAME =#{fileName},
+	FILE_PATH =#{filePath}
+	WHERE PARENT_BOARD_NO = #{parentBoardNo}
+	AND FILE_LEVEL = 0
+</update>
+
+ <!-- Shop 파일 정보 수정 summernote -->
+<select id="selectProductSummernoteImg" parameterType="string" resultMap="productImg">
+	SELECT * FROM PRODUCTIMAGE
+	WHERE PARENT_BOARD_NO = #{parentBoardNo}
+	AND FILE_LEVEL = 1
+</select>
+
+
+
+
+<!--섬머노트 파일 정보 일괄  삭제 -->
+<delete id="deleteProductImgList" parameterType="list">
+	DELETE FROM PRODUCTIMAGE 
+	WHERE FILE_NO IN
+	<foreach collection="list" item="fileNo" open="(" close=")" separator=",">
+	#{fileNo}	
+	</foreach>
+</delete>
+<delete id="deleteProductImgList2" parameterType="list">
+	DELETE FROM PRODUCTIMAGE 
+	WHERE parent_board_no IN
+	<foreach collection="list" item="parentBoardNo" open="(" close=")" separator=",">
+	#{parentBoardNo}	
+	</foreach>
+</delete>
+
+
+<delete id="delete" parameterType="list" >
+	
+	DELETE FROM product 
+	WHERE product_num IN
+	<foreach collection="list" item="productNum" open="(" close=")" separator=",">
+	#{productNum}	
+	</foreach>
+	
+</delete>
+
+
+   <!-- DB에 저장된 최근 3일 이내 제외한 파일 정보 조회 -->
+   <select id="selectDBFileList" resultType="string">
+   <!-- 
+   	  <![CDATA[ 부등호포함 SQL구문 ]]> : markUp 언어에서<,> 태그 기호를 태그가 아닌 글자로 인식하게 하는 구문
+    -->
+   SELECT FILE_NAME
+	 FROM PRODUCTIMAGE
+	<!--  <![CDATA[
+	 WHERE TO_DATE(SUBSTR(FILE_NAME,0,8),'YYMMDDHH24') < SYSDATE-3
+ 	 ]]> -->
+   </select>
+
+	<insert id="noticeWriteSave">
+		insert into board_notice(notice_title,notice_content,notice_no,notice_group)
+		values(#{notice_title},#{notice_content},board_notice_seq.nextval,#{notice_group})
+	</insert>
+	
+	
+	<select id="contentView" resultMap="notice">
+		select * from board_notice where notice_no=#{notice_no}
+	</select>
+	
+	<update id="noticeModify">
+		update board_notice set notice_title=#{notice_title}, 
+		notice_content=#{notice_content}, 
+		notice_group=#{notice_group} 
+		where notice_no=#{notice_no}
+	</update>
+	<delete id="noticeDelete">
+		delete from board_notice where notice_no=#{notice_no}
+	</delete>
+	
+	<select id="adminProductSearch" parameterType="java.util.HashMap" resultMap="product">
+		select * from product where ${productSearch_option} like '%'||#{keyword}||'%'
+   </select>
+	
+	<insert id="faqSave">
+		insert into FAQ(faq_no,faq_group,faq_subject,faq_content)
+			values(FAQ_seq.nextval,#{faq_group},#{faq_subject},#{faq_content})
+	</insert>
+	
+	<delete id="faqDelete">
+		delete from FAQ where faq_no=#{faq_no}
+	</delete>
+	
+	<update id="faqModify">
+		update FAQ set faq_subject=#{faq_subject}, faq_content=#{faq_content} where faq_no = #{faq_no}
+	</update>
+	
+	<select id="faqModifyView" resultMap="faq">
+		select * from FAQ where faq_no = #{faq_no}
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

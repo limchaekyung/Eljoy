@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.modify.mybatis.SnsModiMapper">
+	<resultMap type="com.care.root.modify.dto.SnsDTO" id="sns">
+		<id property="id" column="sns_id"/>
+		<result property="name" column="sns_name"/>
+		<result property="email" column="sns_email"/>
+		<result property="phone" column="sns_phone"/>
+	</resultMap>
+	
+	<!-- 수정 -->
+	<select id="snsInfo" resultMap="sns">
+		select sns_id, sns_name, sns_email, sns_phone
+		 from sns_member where sns_id=#{id}
+	</select>
+	
+	<select id="email_check" resultMap="sns">
+		select sns_id, sns_name, sns_email, sns_phone
+		 from sns_member where sns_email=#{email}
+	</select>
+		
+	<select id="phone_check" resultMap="sns">
+		select sns_id, sns_name, sns_email, sns_phone
+		 from sns_member where sns_phone=#{phone}
+	</select>
+	
+	<update id="sns_modify">
+		update sns_member set sns_name=#{name}, 
+		sns_email=#{email}, sns_phone=#{phone} where sns_id=#{id}
+	</update>
+</mapper>

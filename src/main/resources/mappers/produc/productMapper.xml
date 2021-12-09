@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.product.mybatis.userProductMapper">
+	<resultMap type="com.care.root.admin.product.dto.productDTO" id="product">
+		<id property="productNum" column="product_num"/>
+		<result property="productName" column="product_name"/>
+		<result property="productTitle" column="product_title"/>
+		<result property="productCategory" column="product_category"/>
+		<result property="productContent" column="product_content"/>		
+		<result property="productDate" column="product_data"/>
+		<result property="productCompany" column="product_company"/>		
+		<result property="productQuantity" column="product_quantity"/>
+		<result property="productPee" column="product_pee"/>
+		<result property="productPeriod" column="product_period"/>
+	</resultMap>
+
+	<resultMap type="com.care.root.admin.product.dto.productImageDTO" id="productImg">
+			<id property="fileNo" column="file_no"/>
+			<result property="filePath" column="file_path"/>
+			<result property="fileName" column="file_name"/>
+			<result property="fileLevel" column="file_level"/>
+			<result property="parentBoardNo" column="parent_board_no"/>
+  </resultMap>
+  <resultMap type="com.care.root.product.dto.userProductDTO" id="thumproductImg">
+			<result property="productNum" column="product_num"/>
+			<result property="productName" column="product_name"/>
+			<result property="productTitle" column="product_title"/>
+			<result property="productCategory" column="product_category"/>
+			<result property="productContent" column="product_content"/>		
+			<result property="productDate" column="product_data"/>
+			<result property="productCompany" column="product_company"/>		
+			<result property="productQuantity" column="product_quantity"/>
+			<result property="productPee" column="product_pee"/>
+			<result property="productPeriod" column="product_period"/>
+			<result property="fileNo" column="file_no"/>
+			<result property="filePath" column="file_path"/>
+			<result property="fileName" column="file_name"/>
+			<result property="fileLevel" column="file_level"/>
+			<result property="parentBoardNo" column="parent_board_no"/>
+  </resultMap>
+  <resultMap type="com.care.root.payment.dto.paymentDTO" id="payment">
+  		<result property="payment_id" column="payment_id"/>
+  		<result property="product_name" column="product_name"/>
+  		<result property="product_num" column="product_num"/>
+  		<result property="payment_name" column="payment_name"/>
+  		<result property="payment_addr1" column="payment_addr1"/>
+  		<result property="payment_addr2" column="payment_addr2"/>
+  		<result property="payment_addr3" column="payment_addr3"/>
+  		<result property="payment_phone" column="payment_phone"/>
+  		<result property="payment_delivery" column="payment_delivery"/>
+  		<result property="payment_memo" column="payment_memo"/>
+  		<result property="payment_total" column="payment_total"/>
+  		<result property="payment_date" column="payment_date"/>
+  		<result property="cart_photo" column="cart_photo"/>
+  		<result property="member_id" column="member_id"/>
+  		<result property="payment_rental" column="payment_rental"/>
+  </resultMap>
+  
+  	
+  	<insert id="pamentSave"> <!-- member_id 이용자 세션 받으면 그거 ㄴ넣기 -->
+		insert into PATMENT(member_id,product_num,payment_id,payment_name,payment_addr1,payment_addr2,payment_addr3,payment_phone,payment_memo,product_name,payment_rental,payment_total)
+		values('bbb1234',#{product_num},SEQ_PATMENT.nextval,#{payment_name},#{payment_addr1},#{payment_addr2},#{payment_addr3},#{payment_phone},#{payment_memo},#{product_name},'3일',3300)	
+	</insert>
+  	
+	<select id="productList" resultMap="thumproductImg">
+		<!-- select * from product -->
+		select * from v_product where file_level=0
+	
+	</select>
+	
+	<select id="attachmentList" parameterType="string" resultMap="productImg">
+		SELECT * FROM PRODUCTIMAGE
+		WHERE parent_board_no = #{productNum}
+		AND FILE_LEVEL = 0
+	</select>
+	
+	<select id="adminProductView" resultMap="product">
+		select * from product where product_num=#{productNum}
+	</select>
+	
+	<select id="attachmentThumList" resultMap="thumproductImg">
+		<!-- select * from product pro inner join productImage a on(pro.product_num = a.parent_board_no)
+		and pro.product_num = a.parent_board_no and a.file_level =0 -->
+		select * from v_product where file_level=0
+	</select>
+	<select id="categorySearch" resultMap="thumproductImg">
+		select * from v_product where product_company= #{productCompany} and file_level = 0
+	</select>
+	<select id="category" resultMap="thumproductImg">
+		select * from v_product where product_category= #{productCategory} and file_level = 0
+	</select>
+	
+	<select id="applecategory" resultMap="thumproductImg">
+		select * from v_product where product_category= #{productCategory} and product_company= #{productCompany} and file_level = 0
+	</select>
+	<select id="ProductSearch" parameterType="java.util.HashMap" resultMap="thumproductImg">
+		select * from v_product where ${productSearch_option} like '%'||#{keyword}||'%' and file_level = 0
+   </select>
+   
+   <select id="productPaymentList" resultMap="thumproductImg">
+		select * from v_product where product_num = #{productNum}
+		and file_level = 0
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
